@@ -105,7 +105,20 @@ for file in json_files:
                     json_data['properties'].pop('maxAlpha', None)
                     json_data['properties'].pop('minAlpha', None)
                     print("Migrated properties.fade in", file)
-
+                    
+                # Rename conditions.weather to conditions.weathers
+                if 'conditions' in json_data and 'weather' in json_data['conditions']:
+                    json_data['conditions']['weathers'] = json_data['conditions']['weather']
+                    del json_data['conditions']['weather']
+                    print("Renamed conditions.weather to conditions.weathers in", file)
+                    
+                # Migrate arrays in conditions to objects with an entries field
+                if 'conditions' in json_data:
+                    for key, value in json_data['conditions'].items():
+                        if isinstance(value, list):
+                            json_data['conditions'][key] = {'entries': value}
+                            print(f"Migrated {key} in conditions to use entries field in", file)
+                
                 # Save the modified JSON data back to the file
                 f.seek(0)
                 json.dump(json_data, f, indent=2)

@@ -52,17 +52,19 @@ for file in json_files:
                     json_data['type'] = "multi-textured"
                     print("Updated type in", file, "from", current_type, "to multi-textured")
 
-                    # Rename uvRanges to uvRange
-                    if 'uvRanges' in json_data:
-                        json_data['uvRange'] = json_data['uvRanges']
-                        del json_data['uvRanges']
-                        print("Renamed uvRanges to uvRange in", file)
-
                     # Rename animations to animatableTextures
                     if 'animations' in json_data:
                         json_data['animatableTextures'] = json_data['animations']
                         del json_data['animations']
                         print("Renamed animations to animatableTextures in", file)
+
+                    # Rename uvRanges to uvRange in animatableTextures array
+                    if 'animatableTextures' in json_data:
+                        for texture in json_data['animatableTextures']:
+                            if 'uvRanges' in texture:
+                                texture['uvRange'] = texture['uvRanges']
+                                del texture['uvRanges']
+                                print("Renamed uvRanges to uvRange in an element of animatableTextures in", file)
                 elif current_type not in ["monocolor", "overworld", "end"]:
                     manual_fix.append(file)
 

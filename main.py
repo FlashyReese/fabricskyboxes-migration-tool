@@ -22,13 +22,7 @@ def replace_range(range_obj, new_min, new_max):
     range_obj['max'] = new_max
 
 def time_loop_helper(time, day):
-    if time == 0:
-        if day == 1:
-            return 0
-        else:
-            return 24000 * day - 1
-    else:
-        return time * day
+    return time + (24000 * day)
 
 if len(sys.argv) < 2:
     print("Usage: {} directory_path".format(sys.argv[0]))
@@ -140,7 +134,7 @@ for file in json_files:
 
                             # Step 2: Populate the keyframes
                             newKeyFrames = {}
-                            for day in range(1, int(math.ceil(days)) + 1):
+                            for day in range(0, int(math.ceil(days))):
                                 newStartFadeIn = time_loop_helper(startFadeIn, day)
                                 newEndFadeIn = time_loop_helper(endFadeIn, day)
                                 newStartFadeOut = time_loop_helper(startFadeOut, day)
@@ -217,7 +211,6 @@ if manual_fix:
     print("Files that need manual intervention:")
     for fix_file in manual_fix:
         print(fix_file)
-
     print("\n")
 
 # Print files that need manual loop check

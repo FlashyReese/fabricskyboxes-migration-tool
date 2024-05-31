@@ -196,7 +196,32 @@ for file in json_files:
                         if isinstance(value, list):
                             json_data['conditions'][key] = {'entries': value}
                             print(f"Migrated {key} in conditions to use entries field")
-                
+
+                # Handle properties related to fog
+                if 'properties' in json_data:
+                    fog_data = {}
+                    if json_data['properties'].get('changeFog', False):
+                        fog_data['modifyColors'] = True
+                        fog_colors = json_data['properties'].get('fogColors', {})
+                        fog_data['red'] = fog_colors.get('red', 0.0)
+                        fog_data['green'] = fog_colors.get('green', 0.0)
+                        fog_data['blue'] = fog_colors.get('blue', 0.0)
+
+                    if json_data['properties'].get('changeFogDensity', False):
+                        fog_data['modifyDensity'] = True
+                        fog_data['density'] = json_data['properties'].get('fogColors', {}).get('alpha', 1.0)
+
+                    if 'inThickFog' in json_data['properties']:
+                        fog_data['showInDenseFog'] = not json_data['properties']['inThickFog']
+
+                    if fog_data:
+                        json_data['properties']['fog'] = fog_data
+                        json_data['properties'].pop('changeFog', None)
+                        json_data['properties'].pop('changeFogDensity', None)
+                        json_data['properties'].pop('fogColors', None)
+                        json_data['properties'].pop('inThickFog', None)
+                        print("Migrated fog related properties")
+
                 # Save the modified JSON data back to the file
                 f.seek(0)
                 json.dump(json_data, f, indent=2)
